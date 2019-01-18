@@ -1,19 +1,24 @@
 var app = require('express')();
 var http = require('http').Server(app);
 var io = require('socket.io')(http);
-console.log('adasd');
+
+var array = [];
 
 http.listen(4000, () => {
   console.log('listening:');
 });
 
-io.on('connection', (a) => {
+io.on('connection', (socket) => {
   console.log('connected');
   // console.log(a);
-  // io.on('show', (b) => {
-  //   console.log('show');
-  //   console.log(b);
-  // });
+  socket.on('started', (position) => {
+    array.push(position);
+    // console.log('show');
+    // console.log(b);
+    socket.emit('update', array);
+  });
+
+
 
 });
 

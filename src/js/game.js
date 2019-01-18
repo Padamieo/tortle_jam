@@ -71,11 +71,13 @@ function create () {
   this.physics.world.setBounds(this.bottom, this.bottom, this.top, this.top);
   this.add.image(0, 0, 'bg').setOrigin(0);
 
+  var x = phaser.Math.Between(this.bottom, this.top);
+  var y = phaser.Math.Between(this.bottom, this.top);
   game.group = this.add.group();
   var turtle = new Turt(
     this,
-    phaser.Math.Between(this.bottom, this.top),
-    phaser.Math.Between(this.bottom, this.top)
+    x,
+    y
   );
   this.add.existing(turtle);
   this.cameras.main.startFollow(
@@ -84,7 +86,16 @@ function create () {
   );
 
   var io = require('socket.io-client');
-  var socket = io.connect('http://localhost:3000');
+  var socket = io.connect('http://localhost:4000');
+
+  socket.on('connect', () => {
+    console.log('test');
+    socket.emit('started', {x,y});
+  });
+
+  socket.on('update', (data) => {
+    console.log(data);
+  });
 
 }
 
