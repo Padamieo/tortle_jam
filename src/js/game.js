@@ -76,8 +76,8 @@ function create () {
   game.group = this.add.group();
   var turtle = new Turt(
     this,
-    x,
-    y
+    0,//x,
+    0//y
   );
   this.add.existing(turtle);
   this.cameras.main.startFollow(
@@ -85,29 +85,52 @@ function create () {
     true, 0.08, 0.08
   );
 
-  var io = require('socket.io-client');
-  var socket = io.connect('http://localhost:4000');
+  game.line = new phaser.Geom.Line(0,0,100,100);
+  var graphics = this.add.graphics({ lineStyle: { width: 4, color: 0xaa00aa } });
+  graphics.strokeLineShape(game.line);
 
-  socket.on('connect', () => {
-    console.log('test');
-    socket.emit('started', {x,y});
-  });
-
-  socket.on('update', (data) => {
-    console.log(data);
-  });
+  // var io = require('socket.io-client');
+  // var socket = io.connect('http://192.168.45.75:4000');
+  //
+  // socket.on('connect', () => {
+  //   console.log('test');
+  //   socket.emit('started', {x,y});
+  // });
+  //
+  // socket.on('update', (data) => {
+  //   console.log(data);
+  // });
 
 }
 
 function update(){
   if (game.input.activePointer.justDown){
     //var a = game.group.children.entries[game.group.children.entries.length-1];
+    window.console.log(game.input.activePointer);
+  }
+
+  if(game.input.activePointer.isDown){
+    //var line = new Phaser.Geom.Line();
+    //console.log(game.line);
+    //window.console.log(downX, downX);
+
+    var a = game.group.children.entries[game.group.children.entries.length-1];
+    //console.log(game.input.activePointer.position);
+    //var angle = phaser.Math.Angle.Between( a.x, a.y, game.input.activePointer.position.x, game.input.activePointer.position.y );
+    game.line = new phaser.Geom.Line(a.x, a.y, game.input.activePointer.position.x, game.input.activePointer.position.y);
+    var graphics = this.add.graphics({ lineStyle: { width: 4, color: 0xaa00aa } });
+    graphics.strokeLineShape(game.line);
+
+    //var angle = phaser.Math.Angle.BetweenPoints(a, game.input.activePointer.position);
+    //console.log( angle );
+    //phaser.Geom.Line.SetToAngle(game.line, a.x, a.y, angle, 600);
+    //a.angle = angle;
   }
 
   if (game.input.activePointer.justUp){
     var a = game.group.children.entries[game.group.children.entries.length-1];
     //a.setVelocityX(5);
-    a.setVelocity(190, 200);
+    //a.setVelocity(190, 200);
     window.console.log(a);
   }
 
