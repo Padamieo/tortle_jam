@@ -66,6 +66,7 @@ function create () {
       // this.add.image(1024 * x, 1024 * y, 'bg').setOrigin(0).setAlpha(0.75);
   //   }
   // }
+
   this.bottom = 0;
   this.top = 1024;
   this.physics.world.setBounds(this.bottom, this.bottom, this.top, this.top);
@@ -76,8 +77,8 @@ function create () {
   game.group = this.add.group();
   var turtle = new Turt(
     this,
-    0,//x,
-    0//y
+    x,
+    y
   );
   this.add.existing(turtle);
   this.cameras.main.startFollow(
@@ -86,8 +87,8 @@ function create () {
   );
 
   game.line = new phaser.Geom.Line(0,0,100,100);
-  var graphics = this.add.graphics({ lineStyle: { width: 4, color: 0xaa00aa } });
-  graphics.strokeLineShape(game.line);
+  game.graphics = this.add.graphics({ lineStyle: { width: 4, color: 0xaa00aa } });
+  game.graphics.strokeLineShape(game.line);
 
   // var io = require('socket.io-client');
   // var socket = io.connect('http://192.168.45.75:4000');
@@ -110,28 +111,22 @@ function update(){
   }
 
   if(game.input.activePointer.isDown){
-    //var line = new Phaser.Geom.Line();
-    //console.log(game.line);
-    //window.console.log(downX, downX);
 
     var a = game.group.children.entries[game.group.children.entries.length-1];
-    //console.log(game.input.activePointer.position);
-    //var angle = phaser.Math.Angle.Between( a.x, a.y, game.input.activePointer.position.x, game.input.activePointer.position.y );
-    game.line = new phaser.Geom.Line(a.x, a.y, game.input.activePointer.position.x, game.input.activePointer.position.y);
-    var graphics = this.add.graphics({ lineStyle: { width: 4, color: 0xaa00aa } });
-    graphics.strokeLineShape(game.line);
+    game.graphics.clear();
+    game.graphics.strokeLineShape(game.line);
+    game.line.setTo(a.x, a.y, game.input.activePointer.worldX, game.input.activePointer.worldY);
 
-    //var angle = phaser.Math.Angle.BetweenPoints(a, game.input.activePointer.position);
-    //console.log( angle );
-    //phaser.Geom.Line.SetToAngle(game.line, a.x, a.y, angle, 600);
-    //a.angle = angle;
   }
 
   if (game.input.activePointer.justUp){
     var a = game.group.children.entries[game.group.children.entries.length-1];
-    //a.setVelocityX(5);
+    var angle = phaser.Math.Angle.Between(game.input.activePointer.worldX, game.input.activePointer.worldY, a.x, a.y);
+    window.console.log(phaser.Geom.Line.Length(game.line));
     //a.setVelocity(190, 200);
-    window.console.log(a);
+    var velocity = new phaser.Math.Vector2();
+    this.physics.velocityFromRotation(angle, 200, velocity);
+    a.setVelocity(velocity.x, velocity.y);
   }
 
 }
