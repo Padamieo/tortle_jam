@@ -9,16 +9,26 @@ http.listen(4000, () => {
 });
 
 io.on('connection', (socket) => {
-  console.log('connected');
-  // console.log(a);
-  socket.on('started', (position) => {
+  //console.log('test', socket);
+  console.log(`Socket ${socket.id} connected.`);
+
+  socket.on('start', (position) => {
+    position.id = socket.id;
     array.push(position);
-    // console.log('show');
-    // console.log(b);
-    socket.emit('update', array);
+    //socket.emit('newPlayer', socket.id);
+    io.sockets.connected[socket.id].emit('newPlayer', socket.id);
   });
 
+  socket.on('update', (data) => {
+    for(var i = 0; i <= array.length; i++){
+      console.log(array[i]);
+    }
 
+  });
+
+  socket.on('disconnect', () => {
+    console.log(`Socket disconnected.`);
+  });
 
 });
 

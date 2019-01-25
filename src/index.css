@@ -12,6 +12,6 @@ body{
 canvas{
   display: block;
   position: relative;
-  min-width: 95vw;
-  min-height: calc(95vw * 16 / 9);
+  /* min-width: 95vw;
+  min-height: calc(95vw * 16 / 9); */
 }
