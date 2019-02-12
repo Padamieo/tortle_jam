@@ -4,8 +4,13 @@ import Turt from './turtle';
 var config = {
     type: Phaser.AUTO,
     parent: 'phaser-example',
-    width: 432,
-    height: 768,
+    antialias: true,
+    scale:{
+      width: 432,
+      height: 768,
+      mode: Phaser.Scale.FIT,
+      autoCenter: Phaser.Scale.CENTER_BOTH
+    },
     physics: {
       default: 'arcade',
       arcade: {
@@ -48,7 +53,7 @@ function create () {
   // }
 
   this.bottom = 0;
-  this.top = 1024;
+  this.top = 1050;//1024
   this.physics.world.setBounds(this.bottom, this.bottom, this.top, this.top);
   this.add.image(0, 0, 'bg').setOrigin(0);
 
@@ -82,6 +87,8 @@ function create () {
 
 function update(){
 
+  //game.turtle.update();
+
   if (game.input.activePointer.justDown){
     //var a = game.group.children.entries[game.group.children.entries.length-1];
     //window.console.log(game.input.activePointer);
@@ -89,24 +96,33 @@ function update(){
 
   if(game.input.activePointer.isDown){
     //var a = game.group.children.entries[game.group.children.entries.length-1];
-    var a = game.turtle;
-    if(!a.body.isMoving){
+    //if(!a.body.isMoving){
       game.graphics.clear();
       game.graphics.strokeLineShape(game.line);
-      game.line.setTo(a.x, a.y, game.input.activePointer.worldX, game.input.activePointer.worldY);
-    }
+      game.line.setTo(
+        game.turtle.x,
+        game.turtle.y,
+        game.input.activePointer.worldX,
+        game.input.activePointer.worldY
+      );
+    //}
   }
 
   if (game.input.activePointer.justUp){
     //var a = game.group.children.entries[game.group.children.entries.length-1];
-    var a = game.turtle;
-    if(!a.body.isMoving){
-      var angle = phaser.Math.Angle.Between(game.input.activePointer.worldX, game.input.activePointer.worldY, a.x, a.y);
+
+    //if(!a.body.isMoving){
+      var angle = phaser.Math.Angle.Between(
+        game.input.activePointer.worldX,
+        game.input.activePointer.worldY,
+        game.turtle.x,
+        game.turtle.y
+      );
       //window.console.log(phaser.Geom.Line.Length(game.line));
       var velocity = new phaser.Math.Vector2();
       this.physics.velocityFromRotation(angle, 200, velocity);
-      a.setVelocity(velocity.x, velocity.y);
-    }
+      game.turtle.setVelocity(velocity.x, velocity.y);
+    //}
   }
 
   if(game.socket.connected){
@@ -119,7 +135,6 @@ function update(){
     game.socket.on('update', (data) => {
       console.log(data);
     });
-
 
   }
 
