@@ -1,16 +1,18 @@
 import phaser from 'phaser';
 import Turt from './turtle';
+import Apple from './apple';
 
 var config = {
     type: Phaser.AUTO,
     parent: 'phaser-example',
     antialias: true,
     scale:{
-      width: 432,
-      height: 768,
+      width: 1024, //window.innerWidth, //432,
+      height: 1024, //window.innerHeight, //768,
       mode: Phaser.Scale.FIT,
       autoCenter: Phaser.Scale.CENTER_BOTH
     },
+    queue: true,
     physics: {
       default: 'arcade',
       arcade: {
@@ -29,6 +31,7 @@ import turtle_placeholder from 'assets/turtle_placeholder.png';
 import bg from 'assets/uv-grid-diag.png';
 
 var game = new phaser.Game(config);
+// game.setGameSize(600,600);
 
 function preload () {
   this.load.image('placeholder', turtle_placeholder);
@@ -53,17 +56,22 @@ function create () {
   // }
 
   this.bottom = 0;
-  this.top = 1050;//1024
+  this.top = 1024;
   this.physics.world.setBounds(this.bottom, this.bottom, this.top, this.top);
   this.add.image(0, 0, 'bg').setOrigin(0);
 
   var x = phaser.Math.Between(this.bottom, this.top);
   var y = phaser.Math.Between(this.bottom, this.top);
+
   game.group = this.add.group();
+
   game.turtle = new Turt( this, x, y );
   game.turtle.alpha = 0.5;
+  //this.add.existing(game.turtle);
 
-  this.add.existing(game.turtle);
+  game.group.add(game.turtle);
+  this.physics.add.collider(game.turtle, game.group);
+
   this.cameras.main.startFollow(
     game.turtle, //game.group.children.entries[game.group.children.entries.length-1],
     true, 0.08, 0.08
@@ -73,30 +81,41 @@ function create () {
   game.graphics = this.add.graphics({ lineStyle: { width: 4, color: 0xaa00aa } });
   game.graphics.strokeLineShape(game.line);
 
+  var apl = new Turt( this, phaser.Math.Between(this.bottom, this.top), phaser.Math.Between(this.bottom, this.top) );
+  game.group.add(apl);
+  this.physics.add.collider(apl, game.group);
+  //var apl2 = new Apple( this, x+40, y+40 );
+
   var io = require('socket.io-client');
-  game.socket = io.connect('http://192.168.75.45:4000', {
+  game.socket = io.connect('http://192.168.1.104:4000', {
     reconnection:false
   });
 
-  console.log(game.socket);
   game.socket.on('connect', () => {
     game.socket.emit('start', {x,y});
   });
 
+  //this.keys = this.input.keyboard.addKeys('A,D,S,W');
 }
 
 function update(){
+  //game.turtle.update(game);
 
-  //game.turtle.update();
+  //var a = game.group.children.entries[game.group.children.entries.length-1];
 
-  if (game.input.activePointer.justDown){
-    //var a = game.group.children.entries[game.group.children.entries.length-1];
-    //window.console.log(game.input.activePointer);
-  }
+  // if(this.keys.A.isDown){
+  //   game.turtle.setVelocity(-100, 0);
+  // }
+  // if(this.keys.W.isDown){
+  //   game.turtle.setVelocity(0, -100);
+  // }
+  // if(this.keys.S.isDown){
+  //   console.log(game.turtle);
+  //   //console.log(game.input);
+  // }
 
-  if(game.input.activePointer.isDown){
-    //var a = game.group.children.entries[game.group.children.entries.length-1];
-    //if(!a.body.isMoving){
+  if(game.turtle.moving === false){
+    if(game.input.activePointer.isDown){
       game.graphics.clear();
       game.graphics.strokeLineShape(game.line);
       game.line.setTo(
@@ -105,37 +124,45 @@ function update(){
         game.input.activePointer.worldX,
         game.input.activePointer.worldY
       );
-    //}
-  }
-
-  if (game.input.activePointer.justUp){
-    //var a = game.group.children.entries[game.group.children.entries.length-1];
-
-    //if(!a.body.isMoving){
-      var angle = phaser.Math.Angle.Between(
-        game.input.activePointer.worldX,
-        game.input.activePointer.worldY,
-        game.turtle.x,
-        game.turtle.y
-      );
-      //window.console.log(phaser.Geom.Line.Length(game.line));
-      var velocity = new phaser.Math.Vector2();
-      this.physics.velocityFromRotation(angle, 200, velocity);
-      game.turtle.setVelocity(velocity.x, velocity.y);
-    //}
+      game.turtle.d = true;
+    }else{
+      game.graphics.clear();
+      if(game.turtle.d){
+        game.turtle.d = false;
+        var angle = phaser.Math.Angle.Between(
+          game.input.activePointer.worldX,
+          game.input.activePointer.worldY,
+          game.turtle.x,
+          game.turtle.y
+        );
+        var velocity = new phaser.Math.Vector2();
+        this.physics.velocityFromRotation(angle, 500, velocity);
+        game.turtle.setVelocity(velocity.x, velocity.y);
+      }
+    }
+  }else{
+    game.graphics.clear();
   }
 
   if(game.socket.connected){
     game.socket.on('newPlayer', (id) => {
       game.turtle.id = id;
       game.turtle.alpha = 1;
-      window.console.log(game);
+      //window.console.log(game);
     });
-
     game.socket.on('update', (data) => {
       console.log(data);
     });
 
+    game.socket.on('position', (position) => {
+      console.log('create enemy');
+      console.log(game.group);
+      var tortle = new Turt( this, position.x, position.y);
+      game.group.add(tortle);
+      //this.physics.add.collider(game.group, game.turtle);
+      console.log(game.group);
+      // this.add.sprite(position.x, position.y, 'placeholder');
+    })
   }
 
 }

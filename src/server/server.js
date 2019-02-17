@@ -17,13 +17,13 @@ io.on('connection', (socket) => {
     array.push(position);
     //socket.emit('newPlayer', socket.id);
     io.sockets.connected[socket.id].emit('newPlayer', socket.id);
+    socket.emit('position', position);
   });
 
   socket.on('update', (data) => {
     for(var i = 0; i <= array.length; i++){
-      console.log(array[i]);
-    }
 
+    }
   });
 
   socket.on('disconnect', () => {
