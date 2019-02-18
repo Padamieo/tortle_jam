@@ -10,19 +10,27 @@ class Turt extends phaser.Physics.Arcade.Sprite {
 
       scene.physics.add.existing(this);
 
-      this.setCircle(this.height*0.5);
+      //this.setCircle(this.height*0.5);
 
-      this.body.setDrag(0, 0);
+      this.body.setDrag(3, 3);
 
-      this.setBounce(0.99);
+      this.setBounce(0.7);
       this.setScale(0.5);
       this.setOrigin(0.5, 0.5);
-
+      var w = this.width*0.7;
+      var h = this.height*0.7;
+      this.body.setSize(w, h, true);
       this.body.setAllowGravity(false);
       this.body.setMass(10);
+      var ww = (this.width - w)*0.5;
+      var hh = (this.height - h)*0.5;
+      this.body.offset = {x:ww, y:hh};
+      //this.body.scaleX = 0.3;
+      this.body.angularDrag = 4;
+      this.body.angularVelocity = 0;
 
       this.setCollideWorldBounds(true);
-      this.body.stopVelocityOnCollide = true;
+      this.body.stopVelocityOnCollide = false;
 
       this.moving = false;
       scene.add.existing(this);

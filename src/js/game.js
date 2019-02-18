@@ -1,11 +1,13 @@
 import phaser from 'phaser';
 import Turt from './turtle';
-import Apple from './apple';
+import Fruit from './fruit';
 
 var config = {
     type: Phaser.AUTO,
     parent: 'phaser-example',
     antialias: true,
+    pixelArt: true,
+    zoom: 1,
     scale:{
       width: 1024, //window.innerWidth, //432,
       height: 1024, //window.innerHeight, //768,
@@ -29,6 +31,8 @@ var config = {
 //console.log(phaser);
 import turtle_placeholder from 'assets/turtle_placeholder.png';
 import bg from 'assets/uv-grid-diag.png';
+import fruits from 'assets/fruit.png';
+import tiles from 'assets/Tileset_BW.png';
 
 var game = new phaser.Game(config);
 // game.setGameSize(600,600);
@@ -36,10 +40,18 @@ var game = new phaser.Game(config);
 function preload () {
   this.load.image('placeholder', turtle_placeholder);
   this.load.image('bg', bg);
-  // this.load.spritesheet('dude',
-  // 'assets/dude.png',
-  // { frameWidth: 32, frameHeight: 48 }
-  // );
+
+  // this.load.image('tiles', tiles);
+
+  this.load.spritesheet('tiles',
+    tiles,
+    { frameWidth: 24, frameHeight: 24 }
+  );
+
+  this.load.spritesheet('fruits',
+    fruits,
+    { frameWidth: 16, frameHeight: 16 }
+  );
 }
 
 function create () {
@@ -60,20 +72,26 @@ function create () {
   this.physics.world.setBounds(this.bottom, this.bottom, this.top, this.top);
   this.add.image(0, 0, 'bg').setOrigin(0);
 
+  this.add.image(0, 0, 'tiles').setOrigin(0).setScale(25).setTint(0x009955);
+  //.setRotation(-Math.PI * 0.25);
+
+  //this.add.tileSprite(0, 0, 100, 100, 'tiles').setOrigin(0).setScale(25);
+
   var x = phaser.Math.Between(this.bottom, this.top);
   var y = phaser.Math.Between(this.bottom, this.top);
 
-  game.group = this.add.group();
+  game.turtles = this.add.group();
+  this.fruits = this.add.group();
 
   game.turtle = new Turt( this, x, y );
   game.turtle.alpha = 0.5;
   //this.add.existing(game.turtle);
 
-  game.group.add(game.turtle);
-  this.physics.add.collider(game.turtle, game.group);
+  game.turtles.add(game.turtle);
+  this.physics.add.collider(game.turtle, game.turtles);
 
-  this.cameras.main.startFollow(
-    game.turtle, //game.group.children.entries[game.group.children.entries.length-1],
+  this.camera = this.cameras.main.startFollow(
+    game.turtle, //game.turtles.children.entries[game.turtles.children.entries.length-1],
     true, 0.08, 0.08
   );
 
@@ -81,10 +99,19 @@ function create () {
   game.graphics = this.add.graphics({ lineStyle: { width: 4, color: 0xaa00aa } });
   game.graphics.strokeLineShape(game.line);
 
-  var apl = new Turt( this, phaser.Math.Between(this.bottom, this.top), phaser.Math.Between(this.bottom, this.top) );
-  game.group.add(apl);
-  this.physics.add.collider(apl, game.group);
-  //var apl2 = new Apple( this, x+40, y+40 );
+  var t = new Turt( this, phaser.Math.Between(this.bottom, this.top), phaser.Math.Between(this.bottom, this.top) );
+  game.turtles.add(t);
+  this.physics.add.collider(t, game.turtles);
+
+  new Fruit( this, phaser.Math.Between(this.bottom, this.top), phaser.Math.Between(this.bottom, this.top) );
+  new Fruit( this, phaser.Math.Between(this.bottom, this.top), phaser.Math.Between(this.bottom, this.top) );
+  new Fruit( this, phaser.Math.Between(this.bottom, this.top), phaser.Math.Between(this.bottom, this.top) );
+  new Fruit( this, phaser.Math.Between(this.bottom, this.top), phaser.Math.Between(this.bottom, this.top) );
+
+  this.physics.add.overlap(this.fruits, game.turtle, (x)=> {
+    console.log('over', x);
+    x.collected();
+  });
 
   var io = require('socket.io-client');
   game.socket = io.connect('http://192.168.1.104:4000', {
@@ -95,13 +122,13 @@ function create () {
     game.socket.emit('start', {x,y});
   });
 
-  //this.keys = this.input.keyboard.addKeys('A,D,S,W');
+  this.keys = this.input.keyboard.addKeys('A,D,S,W');
 }
 
 function update(){
   //game.turtle.update(game);
 
-  //var a = game.group.children.entries[game.group.children.entries.length-1];
+  //var a = game.turtles.children.entries[game.turtles.children.entries.length-1];
 
   // if(this.keys.A.isDown){
   //   game.turtle.setVelocity(-100, 0);
@@ -109,10 +136,11 @@ function update(){
   // if(this.keys.W.isDown){
   //   game.turtle.setVelocity(0, -100);
   // }
-  // if(this.keys.S.isDown){
-  //   console.log(game.turtle);
-  //   //console.log(game.input);
-  // }
+  if(this.keys.S.isDown){
+    //console.log(game.turtle);
+    //console.log(game.input);
+    this.camera.zoom = 0.5;
+  }
 
   if(game.turtle.moving === false){
     if(game.input.activePointer.isDown){
@@ -156,11 +184,11 @@ function update(){
 
     game.socket.on('position', (position) => {
       console.log('create enemy');
-      console.log(game.group);
+      console.log(game.turtles);
       var tortle = new Turt( this, position.x, position.y);
-      game.group.add(tortle);
-      //this.physics.add.collider(game.group, game.turtle);
-      console.log(game.group);
+      game.turtles.add(tortle);
+      //this.physics.add.collider(game.turtles, game.turtle);
+      console.log(game.turtles);
       // this.add.sprite(position.x, position.y, 'placeholder');
     })
   }

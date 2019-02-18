@@ -2,7 +2,8 @@ var app = require('express')();
 var http = require('http').Server(app);
 var io = require('socket.io')(http);
 
-var array = [];
+var turtles = [];
+var fruits = [];
 
 http.listen(4000, () => {
   console.log('listening:');
@@ -14,14 +15,14 @@ io.on('connection', (socket) => {
 
   socket.on('start', (position) => {
     position.id = socket.id;
-    array.push(position);
+    turtles.push(position);
     //socket.emit('newPlayer', socket.id);
     io.sockets.connected[socket.id].emit('newPlayer', socket.id);
     socket.emit('position', position);
   });
 
   socket.on('update', (data) => {
-    for(var i = 0; i <= array.length; i++){
+    for(var i = 0; i <= turtles.length; i++){
 
     }
   });
