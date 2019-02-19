@@ -35,6 +35,9 @@ class Turt extends phaser.Physics.Arcade.Sprite {
       this.moving = false;
       scene.add.existing(this);
       console.log('turtle', this);
+
+      scene.turtles.add(this);
+      scene.physics.add.collider(this, scene.turtles);
     }
 
     update (game) {

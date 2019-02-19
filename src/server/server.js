@@ -16,9 +16,14 @@ io.on('connection', (socket) => {
   socket.on('start', (position) => {
     position.id = socket.id;
     turtles.push(position);
-    //socket.emit('newPlayer', socket.id);
-    io.sockets.connected[socket.id].emit('newPlayer', socket.id);
-    socket.emit('position', position);
+    if(fruits.length >= 0){
+      fruits.push({x:0,y:0});
+      fruits.push({x:0,y:1000});
+      fruits.push({x:1000,y:0});
+      fruits.push({x:1000,y:1000});
+    }
+    io.sockets.connected[socket.id].emit('setup', socket.id, fruits, turtles);
+    socket.emit('player', position);
   });
 
   socket.on('update', (data) => {
@@ -29,6 +34,22 @@ io.on('connection', (socket) => {
 
   socket.on('disconnect', () => {
     console.log(`Socket disconnected.`);
+    /*
+    var disconnects = [];
+    if(turtles.length !== 0 || turtles.length !== null){
+      for (var i = 0; i < turtles.length; i++) {
+        console.log(turtles[i]);
+        if(turtles[i] !== null && turtles[i].id !== undefined){
+          if(io.sockets.connected[turtles[i].id] === undefined){
+            disconnects.push(turtles[i].id);
+            delete turtles[i];
+          }
+        }
+      }
+
+      socket.emit('disconnected', disconnects);
+    }
+    */
   });
 
 });
