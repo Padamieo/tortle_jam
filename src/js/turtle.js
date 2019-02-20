@@ -12,7 +12,7 @@ class Turt extends phaser.Physics.Arcade.Sprite {
 
       //this.setCircle(this.height*0.5);
 
-      this.body.setDrag(3, 3);
+      this.body.setDrag(1, 1);
 
       this.setBounce(0.7);
       this.setScale(0.5);
@@ -41,6 +41,7 @@ class Turt extends phaser.Physics.Arcade.Sprite {
     }
 
     update (game) {
+
     }
 
     preUpdate (time, delta) {

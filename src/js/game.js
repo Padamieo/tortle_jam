@@ -97,6 +97,7 @@ function create () {
     game.turtle,
     true, 0.08, 0.08
   );
+  this.camera.setBackgroundColor('rgb(50, 50, 10)');
 
   game.line = new phaser.Geom.Line(0,0,100,100);
   game.graphics = this.add.graphics({ lineStyle: { width: 4, color: 0xaa00aa } });
@@ -125,10 +126,24 @@ function create () {
   this.keys = this.input.keyboard.addKeys('A,D,S,W');
 
   // this.tween = this.tweens.addCounter({
-  //     from: 1,
-  //     to: 0.5,
-  //     duration: 1000
+  //   paused: true,
+  //   from: 1,
+  //   to: 0.5,
+  //   duration: 1000,
+  //   //loop : -1,
+  //   onComplete: () => {
+  //     console.log('onComplete');
+  //     var a = this.tween.from;
+  //     var b = this.tween.to;
+  //     this.tween.from = b;
+  //     this.tween.to = a;
+  //     this.tween.pause();
+  //   }
   // });
+
+  //this.tween.pause();
+
+  //this.camera.setViewport(0, 0, 400, 400);
 }
 
 function update(){
@@ -142,10 +157,22 @@ function update(){
   // if(this.keys.W.isDown){
   //   game.turtle.setVelocity(0, -100);
   // }
+  /*
   if(this.keys.S.isDown){
+    if(!this.tween.isPlaying()){
+      this.tween.play();
+    }
     //console.log(this.camera.zoom, this.tween);
-    this.camera.zoom = 0.5;//this.tween.getValue();
+    this.camera.zoom = this.tween.getValue();
+  }else{
+    //if(!this.tween.isPlaying()){
+      this.tween.play();
+    //}
+    //if(this.camera.zoom !== 1){
+      this.camera.zoom = this.tween.getValue();
+    //}
   }
+  */
 
   if(game.turtle.moving === false){
     if(game.input.activePointer.isDown){
@@ -175,6 +202,11 @@ function update(){
     }
   }else{
     game.graphics.clear();
+    if(game.input.activePointer.isDown){
+      console.log('slow', game.turtle.body.speed);
+      // game.turtle.body.velocity -= 1500;
+      // game.turtle.body.speed -= 1500;
+    }
   }
 
   if(game.socket.connected){
