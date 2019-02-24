@@ -3,11 +3,11 @@ import phaser from 'phaser';
 // class Turt extends phaser.GameObjects.Sprite {
 class Turt extends phaser.Physics.Arcade.Sprite {
     constructor (scene, x, y) {
-      super(scene, x, y, 'turtle');
+      super(scene, x, y, 'all');
 
-      //this.setTexture('turtle').setOrigin(0.5, 0.5);
+      //this.setTexture('all').setOrigin(0.5, 0.5);
       scene.add.existing(this);
-      //this.setFrame(1);
+
       this.setRotation(phaser.Math.DegToRad(180));
 
       this.anims.play('vertical_out', true);
@@ -41,9 +41,8 @@ class Turt extends phaser.Physics.Arcade.Sprite {
       var g = phaser.Display.Color.ComponentToHex(c.g);
       var b = phaser.Display.Color.ComponentToHex(c.b);
       //console.log('0x'+r+g+b);
-      this.colour = '0x'+r+'ff'+b;
-      this.setTint(this.colour);
-
+      this.colour = '0x'+r+g+b;
+      //this.setTint('0x'+r+'ff'+b);
       this.body.setDrag(1, 1);
 
       this.setBounce(0.7);
@@ -55,9 +54,10 @@ class Turt extends phaser.Physics.Arcade.Sprite {
       this.body.setAllowGravity(false);
       this.body.setMass(10);
       this.body.allowRotation = false;
-      var ww = (this.width - w)*0.5;
-      var hh = (this.height - h)*0.5;
-      this.body.offset = {x:ww, y:hh};
+      this.body.offset = {
+        x:(this.width - w)*0.5,
+        y:(this.height - h)*0.5
+      };
 
       // this.body.angularDrag = 4;
       // this.body.angularVelocity = 0;
@@ -67,13 +67,14 @@ class Turt extends phaser.Physics.Arcade.Sprite {
 
       this.moving = false;
       // scene.add.existing(this);
-      console.log('turtle', this);
+      console.log('all', this);
 
       scene.turtles.add(this);
       scene.physics.add.collider(this, scene.turtles);
 
-      this.shell = scene.add.sprite(x,y, 'turtle')
-      this.shell.setScale(10).setTint(this.colour).setOrigin(0.5, 0.5);
+      this.shell = scene.add.sprite(x,y, 'all')
+      this.shell.setScale(10).setOrigin(0.5, 0.5);
+      //.setTint(this.colour)
 
     }
 

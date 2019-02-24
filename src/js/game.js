@@ -3,12 +3,8 @@ import Turt from './turtle';
 import Fruit from './fruit';
 
 import setupAnimations from './animations';
-
-import turtle_placeholder from 'assets/turtle_placeholder.png';
-import turtle from 'assets/turtle.png';
+import all from 'assets/turtle.png';
 import bg from 'assets/uv-grid-diag.png';
-import fruits from 'assets/fruit.png';
-import tiles from 'assets/Tileset_BW.png';
 
 class GameScene extends phaser.Scene {
   constructor(test) {
@@ -18,34 +14,19 @@ class GameScene extends phaser.Scene {
   }
 
   preload() {
-    this.load.image('placeholder', turtle_placeholder);
     this.load.image('bg', bg);
-
-    // this.load.image('tiles', tiles);
-
-    this.load.spritesheet('turtle',
-      turtle,
-      { frameWidth: 16, frameHeight: 16, endFrame: 6 }
+    this.load.spritesheet('all',
+      all,
+      { frameWidth: 16, frameHeight: 16, endFrame: 8 }
     );
-    //this.load.image('turtle', turtle);
-
-    this.load.spritesheet('tiles',
-      tiles,
-      { frameWidth: 24, frameHeight: 24 }
-    );
-
-    this.load.spritesheet('fruits',
-      fruits,
-      { frameWidth: 16, frameHeight: 16 }
-    );
-
+    //this.load.image('all', turtle);
   }
 
   create () {
     setupAnimations(this);
     // this.anims.create({
     //   key: 'shell',
-    //   frames: [ { key: 'turtle', frame: 0 } ],
+    //   frames: [ { key: 'all', frame: 0 } ],
     //   frameRate: 10,
     // });
 
@@ -65,14 +46,13 @@ class GameScene extends phaser.Scene {
     this.physics.world.setBounds(this.bottom, this.bottom, this.top, this.top);
     this.add.image(0, 0, 'bg').setOrigin(0);
 
-    var b = this.add.sprite(0, 0, 'tiles').setOrigin(0).setScale(25).setTint(0xff0044);
-    //b.frame.texture.firstFrame = 1;
-    b.anims.nextFrame();
-    // console.log(b);
+    // var tile = this.add.sprite(0, 0, 'all').setOrigin(0).setScale(20);//.setTint(0xff0044);
+    // tile.setFrame(8);
     //.setRotation(-Math.PI * 0.25);
 
-    //this.add.tileSprite(0, 0, 100, 100, 'tiles').setOrigin(0).setScale(25);
-
+    var tilesprite = this.add.tileSprite(0, 0, 50, 50, 'all').setFrame(8).setOrigin(0).setScale(10);
+    console.log(tilesprite);
+    
     var x = phaser.Math.Between(this.bottom, this.top);
     var y = phaser.Math.Between(this.bottom, this.top);
 
@@ -81,18 +61,6 @@ class GameScene extends phaser.Scene {
 
     this.turtle = new Turt( this, x, y );
     //game.turtle.alpha = 0.5;
-    //this.add.existing(game.turtle);
-    // this.anims.create({
-    //   key: 'shell',
-    //   frames: [ { key: 'turtle', frame: 0 } ],
-    //   frameRate: 10
-    // });
-    // this.anims.create({
-    //   key: 'in',
-    //   frames: [ { key: 'turtle', frame: 5 } ],
-    //   frameRate: 10
-    // });
-
     this.turtles.add(this.turtle);
     this.physics.add.collider(this.turtle, this.turtles);
 
@@ -110,7 +78,7 @@ class GameScene extends phaser.Scene {
     // this.turtles.add(t);
     // this.physics.add.collider(t, this.turtles);
 
-    // new Fruit( this, phaser.Math.Between(this.bottom, this.top), phaser.Math.Between(this.bottom, this.top) );
+    new Fruit( this, phaser.Math.Between(this.bottom, this.top), phaser.Math.Between(this.bottom, this.top) );
 
     this.physics.add.overlap(this.fruits, this.turtle, (x)=> {
       console.log('over', x);
