@@ -2,262 +2,291 @@ import phaser from 'phaser';
 import Turt from './turtle';
 import Fruit from './fruit';
 
-var config = {
-    type: Phaser.AUTO,
-    parent: 'phaser-example',
-    antialias: true,
-    pixelArt: true,
-    zoom: 1,
-    scale:{
-      width: 1024, //window.innerWidth, //432,
-      height: 1024, //window.innerHeight, //768,
-      mode: Phaser.Scale.FIT,
-      autoCenter: Phaser.Scale.CENTER_BOTH
-    },
-    queue: true,
-    physics: {
-      default: 'arcade',
-      arcade: {
-        debug: true
-      }
-    },
-    scene: {
-      preload: preload,
-      create: create,
-      update: update
-    }
-};
+import setupAnimations from './animations';
 
-//console.log(phaser);
 import turtle_placeholder from 'assets/turtle_placeholder.png';
+import turtle from 'assets/turtle.png';
 import bg from 'assets/uv-grid-diag.png';
 import fruits from 'assets/fruit.png';
 import tiles from 'assets/Tileset_BW.png';
 
-var game = new phaser.Game(config);
-// game.setGameSize(600,600);
+class GameScene extends phaser.Scene {
+  constructor(test) {
+    super({
+        key: 'GameScene'
+    });
+  }
 
-function preload () {
-  this.load.image('placeholder', turtle_placeholder);
-  this.load.image('bg', bg);
+  preload() {
+    this.load.image('placeholder', turtle_placeholder);
+    this.load.image('bg', bg);
 
-  // this.load.image('tiles', tiles);
+    // this.load.image('tiles', tiles);
 
-  this.load.spritesheet('tiles',
-    tiles,
-    { frameWidth: 24, frameHeight: 24 }
-  );
+    this.load.spritesheet('turtle',
+      turtle,
+      { frameWidth: 16, frameHeight: 16, endFrame: 6 }
+    );
+    //this.load.image('turtle', turtle);
 
-  this.load.spritesheet('fruits',
-    fruits,
-    { frameWidth: 16, frameHeight: 16 }
-  );
-}
+    this.load.spritesheet('tiles',
+      tiles,
+      { frameWidth: 24, frameHeight: 24 }
+    );
 
-function create () {
+    this.load.spritesheet('fruits',
+      fruits,
+      { frameWidth: 16, frameHeight: 16 }
+    );
 
-  // var placeholder = this.add.sprite(50, 10, 'placeholder');
-  // placeholder.width = 10;
-  // placeholder.scaleY = 0.5;
-  // placeholder.scaleX = 0.5;
+  }
 
-  // for (var y = 0; y < 4; y++) {
-  //   for (var x = 0; x < 4; x++) {
-      // this.add.image(1024 * x, 1024 * y, 'bg').setOrigin(0).setAlpha(0.75);
-  //   }
-  // }
+  create () {
+    setupAnimations(this);
+    // this.anims.create({
+    //   key: 'shell',
+    //   frames: [ { key: 'turtle', frame: 0 } ],
+    //   frameRate: 10,
+    // });
 
-  this.bottom = 0;
-  this.top = 1024;
-  this.physics.world.setBounds(this.bottom, this.bottom, this.top, this.top);
-  this.add.image(0, 0, 'bg').setOrigin(0);
+    // var placeholder = this.add.sprite(50, 10, 'placeholder');
+    // placeholder.width = 10;
+    // placeholder.scaleY = 0.5;
+    // placeholder.scaleX = 0.5;
 
-  var b = this.add.sprite(0, 0, 'tiles').setOrigin(0).setScale(25).setTint(0x009944);
-  //b.frame.texture.firstFrame = 1;
-  b.anims.nextFrame();
-  console.log(b);
-  //.setRotation(-Math.PI * 0.25);
+    // for (var y = 0; y < 4; y++) {
+    //   for (var x = 0; x < 4; x++) {
+        // this.add.image(1024 * x, 1024 * y, 'bg').setOrigin(0).setAlpha(0.75);
+    //   }
+    // }
 
-  //this.add.tileSprite(0, 0, 100, 100, 'tiles').setOrigin(0).setScale(25);
+    this.bottom = 0;
+    this.top = 1024;
+    this.physics.world.setBounds(this.bottom, this.bottom, this.top, this.top);
+    this.add.image(0, 0, 'bg').setOrigin(0);
 
-  var x = phaser.Math.Between(this.bottom, this.top);
-  var y = phaser.Math.Between(this.bottom, this.top);
+    var b = this.add.sprite(0, 0, 'tiles').setOrigin(0).setScale(25).setTint(0xff0044);
+    //b.frame.texture.firstFrame = 1;
+    b.anims.nextFrame();
+    // console.log(b);
+    //.setRotation(-Math.PI * 0.25);
 
-  this.turtles = this.add.group();
-  this.fruits = this.add.group();
+    //this.add.tileSprite(0, 0, 100, 100, 'tiles').setOrigin(0).setScale(25);
 
-  game.turtle = new Turt( this, x, y );
-  game.turtle.alpha = 0.5;
-  //this.add.existing(game.turtle);
+    var x = phaser.Math.Between(this.bottom, this.top);
+    var y = phaser.Math.Between(this.bottom, this.top);
 
-  this.turtles.add(game.turtle);
-  this.physics.add.collider(game.turtle, this.turtles);
+    this.turtles = this.add.group();
+    this.fruits = this.add.group();
 
-  this.camera = this.cameras.main.startFollow(
-    game.turtle,
-    true, 0.08, 0.08
-  );
-  this.camera.setBackgroundColor('rgb(50, 50, 10)');
+    this.turtle = new Turt( this, x, y );
+    //game.turtle.alpha = 0.5;
+    //this.add.existing(game.turtle);
+    // this.anims.create({
+    //   key: 'shell',
+    //   frames: [ { key: 'turtle', frame: 0 } ],
+    //   frameRate: 10
+    // });
+    // this.anims.create({
+    //   key: 'in',
+    //   frames: [ { key: 'turtle', frame: 5 } ],
+    //   frameRate: 10
+    // });
 
-  game.line = new phaser.Geom.Line(0,0,100,100);
-  game.graphics = this.add.graphics({ lineStyle: { width: 4, color: 0xaa00aa } });
-  game.graphics.strokeLineShape(game.line);
+    this.turtles.add(this.turtle);
+    this.physics.add.collider(this.turtle, this.turtles);
 
-  // var t = new Turt( this, phaser.Math.Between(this.bottom, this.top), phaser.Math.Between(this.bottom, this.top) );
-  // this.turtles.add(t);
-  // this.physics.add.collider(t, this.turtles);
+    this.camera = this.cameras.main.startFollow(
+      this.turtle,
+      true, 0.08, 0.08
+    );
+    this.camera.setBackgroundColor('rgb(50, 50, 10)');
 
-  // new Fruit( this, phaser.Math.Between(this.bottom, this.top), phaser.Math.Between(this.bottom, this.top) );
+    this.line = new phaser.Geom.Line(0,0,100,100);
+    this.graphics = this.add.graphics({ lineStyle: { width: 4, color: 0xaa00aa } });
+    this.graphics.strokeLineShape(this.line);
 
-  this.physics.add.overlap(this.fruits, game.turtle, (x)=> {
-    console.log('over', x);
-    x.collected();
-  });
+    // var t = new Turt( this, phaser.Math.Between(this.bottom, this.top), phaser.Math.Between(this.bottom, this.top) );
+    // this.turtles.add(t);
+    // this.physics.add.collider(t, this.turtles);
 
-  var io = require('socket.io-client');
-  game.socket = io.connect('http://192.168.75.45:4000', {
-    reconnection:false
-  });
+    // new Fruit( this, phaser.Math.Between(this.bottom, this.top), phaser.Math.Between(this.bottom, this.top) );
 
-  game.socket.on('connect', () => {
-    game.socket.emit('start', {x,y});
-  });
+    this.physics.add.overlap(this.fruits, this.turtle, (x)=> {
+      console.log('over', x);
+      x.collected();
+    });
 
-  this.keys = this.input.keyboard.addKeys('A,D,S,W');
+    var io = require('socket.io-client');
+    window.game.socket = io.connect('http://192.168.1.104:4000', {
+      reconnection:false
+    });
 
-  // this.tween = this.tweens.addCounter({
-  //   paused: true,
-  //   from: 1,
-  //   to: 0.5,
-  //   duration: 1000,
-  //   //loop : -1,
-  //   onComplete: () => {
-  //     console.log('onComplete');
-  //     var a = this.tween.from;
-  //     var b = this.tween.to;
-  //     this.tween.from = b;
-  //     this.tween.to = a;
-  //     this.tween.pause();
-  //   }
-  // });
+    window.game.socket.on('connect', () => {
+      window.game.socket.emit('start', {x,y});
+    });
 
-  //this.tween.pause();
+    this.keys = this.input.keyboard.addKeys('A,D,S,W');
 
-  //this.camera.setViewport(0, 0, 400, 400);
-}
+    // this.tween = this.tweens.addCounter({
+    //   paused: true,
+    //   from: 1,
+    //   to: 0.5,
+    //   duration: 1000,
+    //   //loop : -1,
+    //   onComplete: () => {
+    //     console.log('onComplete');
+    //     var a = this.tween.from;
+    //     var b = this.tween.to;
+    //     this.tween.from = b;
+    //     this.tween.to = a;
+    //     this.tween.pause();
+    //   }
+    // });
 
-function update(){
-  //game.turtle.update(game);
+    //this.tween.pause();
 
-  //var a = this.turtles.children.entries[this.turtles.children.entries.length-1];
+    //this.camera.setViewport(0, 0, 400, 400);
 
-  // if(this.keys.A.isDown){
-  //   game.turtle.setVelocity(-100, 0);
-  // }
-  // if(this.keys.W.isDown){
-  //   game.turtle.setVelocity(0, -100);
-  // }
-  /*
-  if(this.keys.S.isDown){
-    if(!this.tween.isPlaying()){
-      this.tween.play();
-    }
-    //console.log(this.camera.zoom, this.tween);
-    this.camera.zoom = this.tween.getValue();
-  }else{
-    //if(!this.tween.isPlaying()){
-      this.tween.play();
-    //}
-    //if(this.camera.zoom !== 1){
+      // var particles = this.add.particles('crate');
+      // console.log(particles);
+      // this.particles = particles.createEmitter({
+      //   quantity: 1,
+      //   lifespan: 600,
+      //   speed: { min: 10, max: 100 },
+      //   angle: { min: 0, max: 360 },
+      //   alpha: { start: 1, end: 0 },
+      //   scale: { start: 0.5, end: 1 },
+      //   on: false
+      // });
+
+  }
+
+  update(){
+    this.turtle.update();
+
+    //var a = this.turtles.children.entries[this.turtles.children.entries.length-1];
+
+    // if(this.keys.A.isDown){
+    //   game.turtle.setVelocity(-100, 0);
+    // }
+    // if(this.keys.W.isDown){
+    //   game.turtle.setVelocity(0, -100);
+    // }
+    /*
+    if(this.keys.S.isDown){
+      if(!this.tween.isPlaying()){
+        this.tween.play();
+      }
+      //console.log(this.camera.zoom, this.tween);
       this.camera.zoom = this.tween.getValue();
-    //}
-  }
-  */
-
-  if(game.turtle.moving === false){
-    if(game.input.activePointer.isDown){
-      game.graphics.clear();
-      game.graphics.strokeLineShape(game.line);
-      game.line.setTo(
-        game.turtle.x,
-        game.turtle.y,
-        game.input.activePointer.worldX,
-        game.input.activePointer.worldY
-      );
-      game.turtle.d = true;
     }else{
-      game.graphics.clear();
-      if(game.turtle.d){
-        game.turtle.d = false;
-        var angle = phaser.Math.Angle.Between(
-          game.input.activePointer.worldX,
-          game.input.activePointer.worldY,
-          game.turtle.x,
-          game.turtle.y
+      //if(!this.tween.isPlaying()){
+        this.tween.play();
+      //}
+      //if(this.camera.zoom !== 1){
+        this.camera.zoom = this.tween.getValue();
+      //}
+    }
+    */
+
+    if(this.turtle.moving === false){
+      //game.turtle.anims.play('out', true);
+      if(this.input.activePointer.isDown){
+        this.graphics.clear();
+        this.graphics.strokeLineShape(this.line);
+        this.line.setTo(
+          this.turtle.x,
+          this.turtle.y,
+          this.input.activePointer.worldX,
+          this.input.activePointer.worldY
         );
-        var velocity = new phaser.Math.Vector2();
-        this.physics.velocityFromRotation(angle, 500, velocity);
-        game.turtle.setVelocity(velocity.x, velocity.y);
+        this.turtle.d = true;
+      }else{
+        this.graphics.clear();
+        if(this.turtle.d){
+          this.turtle.d = false;
+          var angle = phaser.Math.Angle.Between(
+            this.input.activePointer.worldX,
+            this.input.activePointer.worldY,
+            this.turtle.x,
+            this.turtle.y
+          );
+          var velocity = new phaser.Math.Vector2();
+          this.physics.velocityFromRotation(angle, 500, velocity);
+          this.turtle.setVelocity(velocity.x, velocity.y);
+        }
+      }
+    }else{
+      //this.turtle.anims.play('in', true);
+      this.graphics.clear();
+      if(this.input.activePointer.isDown){
+        if(this.turtle.body.speed < 200){
+          this.turtle.anims.play('out', true);
+          console.log('slow', this.turtle.body.speed, this.turtle.body.velocity);
+          this.turtle.body.setVelocityX(
+            this.turtle.body.velocity.x*0.9
+          );
+          this.turtle.body.setVelocityY(
+            this.turtle.body.velocity.y*0.9
+          );
+          // this.turtle.body.speed -= 1500;
+          //this.particles.emitParticleAt(this.turtle.body.x, this.turtle.body.y);
+        }
       }
     }
-  }else{
-    game.graphics.clear();
-    if(game.input.activePointer.isDown){
-      console.log('slow', game.turtle.body.speed);
-      // game.turtle.body.velocity -= 1500;
-      // game.turtle.body.speed -= 1500;
-    }
-  }
 
-  if(game.socket.connected){
+    if(window.game.socket.connected){
 
-    game.socket.on('setup', (id, fruit, turtles) => {
-      window.console.log('you are:' + id);
-      game.turtle.id = id;
-      game.turtle.alpha = 1;
-      for (var i = 0; i < fruit.length; i++) {
-        new Fruit( this, fruit[i].x, fruit[i].y);
-      }
-      if(turtles || turtles.length !== 0 || turtles.length !== null){
-        for (var i = 0; i < turtles.length; i++) {
-          console.log(turtles[i]);
-          if(turtles[i] !== null){
-            if(turtles[i].id !== game.turtle.id){
-              new Turt( this, turtles[i].x, turtles[i].y);
+      window.game.socket.on('setup', (id, fruit, turtles) => {
+        window.console.log('you are:' + id);
+        this.turtle.id = id;
+        this.turtle.alpha = 1;
+        for (var i = 0; i < fruit.length; i++) {
+          new Fruit( this, fruit[i].x, fruit[i].y);
+        }
+        if(turtles || turtles.length !== 0 || turtles.length !== null){
+          for (var i = 0; i < turtles.length; i++) {
+            console.log(turtles[i]);
+            if(turtles[i] !== null){
+              if(turtles[i].id !== this.turtle.id){
+                new Turt( this, turtles[i].x, turtles[i].y);
+              }
             }
           }
         }
-      }
-    });
+      });
 
-    game.socket.on('player', (turtle) =>{
-      if(turtle.id !== game.turtle.id){
-        new Turt( this, turtle.x, turtle.y);
-      }
-    });
+      window.game.socket.on('player', (turtle) =>{
+        if(turtle.id !== this.turtle.id){
+          new Turt( this, turtle.x, turtle.y);
+        }
+      });
 
-    game.socket.on('update', (data) => {
-      console.log(data);
-    });
+      window.game.socket.on('update', (data) => {
+        console.log(data);
+      });
 
-    game.socket.on('position', (position) => {
-      console.log('create enemy');
-      console.log(this.turtles);
-      var tortle = new Turt( this, position.x, position.y);
-      this.turtles.add(tortle);
-      //this.physics.add.collider(this.turtles, game.turtle);
-      console.log(this.turtles);
-      // this.add.sprite(position.x, position.y, 'placeholder');
-    });
+      window.game.socket.on('position', (position) => {
+        console.log('create enemy');
+        console.log(this.turtles);
+        var tortle = new Turt( this, position.x, position.y);
+        this.turtles.add(tortle);
+        //this.physics.add.collider(this.turtles, this.turtle);
+        console.log(this.turtles);
+        // this.add.sprite(position.x, position.y, 'placeholder');
+      });
 
-    game.socket.on('addFruit', (position) => {
-      new Fruit( this, position.x, position.y);
-    });
+      window.game.socket.on('addFruit', (position) => {
+        new Fruit( this, position.x, position.y);
+      });
 
-    game.socket.on('disconnected', (id) => {
-      console.log('disconnected');
-    });
+      window.game.socket.on('disconnected', (id) => {
+        console.log('disconnected');
+      });
+
+    }
 
   }
-
 }
+export default GameScene;

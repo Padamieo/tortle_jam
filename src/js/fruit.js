@@ -2,11 +2,12 @@ import phaser from 'phaser';
 
 class Fruit extends phaser.GameObjects.Sprite {
     constructor (scene, x, y) {
-      super(scene, x, y, 'fruits');
+      super(scene, x, y, 'turtle');
       scene.add.existing(this);
 
 
       scene.physics.add.existing(this);
+      
       this.setScale(5);
       // this.add.sprite(x, y, 'placeholder');
       // this.setTexture('placeholder').setOrigin(0.5, 0.5);
