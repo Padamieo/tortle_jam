@@ -52,7 +52,7 @@ class GameScene extends phaser.Scene {
 
     var tilesprite = this.add.tileSprite(0, 0, 50, 50, 'all').setFrame(8).setOrigin(0).setScale(10);
     console.log(tilesprite);
-    
+
     var x = phaser.Math.Between(this.bottom, this.top);
     var y = phaser.Math.Between(this.bottom, this.top);
 
@@ -78,15 +78,15 @@ class GameScene extends phaser.Scene {
     // this.turtles.add(t);
     // this.physics.add.collider(t, this.turtles);
 
-    new Fruit( this, phaser.Math.Between(this.bottom, this.top), phaser.Math.Between(this.bottom, this.top) );
+    // new Fruit( this, phaser.Math.Between(this.bottom, this.top), phaser.Math.Between(this.bottom, this.top) );
 
-    this.physics.add.overlap(this.fruits, this.turtle, (x)=> {
+    this.physics.add.overlap(this.fruits, this.turtle, (x) => {
       console.log('over', x);
-      x.collected();
+      x.collected(this.turtle.id);
     });
 
     var io = require('socket.io-client');
-    window.game.socket = io.connect('http://192.168.1.104:4000', {
+    window.game.socket = io.connect('http://192.168.75.45:4000', {
       reconnection:false
     });
 
@@ -116,17 +116,17 @@ class GameScene extends phaser.Scene {
 
     //this.camera.setViewport(0, 0, 400, 400);
 
-      // var particles = this.add.particles('crate');
-      // console.log(particles);
-      // this.particles = particles.createEmitter({
-      //   quantity: 1,
-      //   lifespan: 600,
-      //   speed: { min: 10, max: 100 },
-      //   angle: { min: 0, max: 360 },
-      //   alpha: { start: 1, end: 0 },
-      //   scale: { start: 0.5, end: 1 },
-      //   on: false
-      // });
+      var particles = this.add.particles('crate');
+      console.log(particles);
+      this.particles = particles.createEmitter({
+        quantity: 1,
+        lifespan: 600,
+        speed: { min: 10, max: 100 },
+        angle: { min: 0, max: 360 },
+        alpha: { start: 1, end: 0 },
+        scale: { start: 0.5, end: 1 },
+        on: false
+      });
 
   }
 
@@ -169,11 +169,11 @@ class GameScene extends phaser.Scene {
           this.input.activePointer.worldX,
           this.input.activePointer.worldY
         );
-        this.turtle.d = true;
+        this.input.d = true;
       }else{
         this.graphics.clear();
-        if(this.turtle.d){
-          this.turtle.d = false;
+        if(this.input.d){
+          this.input.d = false;
           var angle = phaser.Math.Angle.Between(
             this.input.activePointer.worldX,
             this.input.activePointer.worldY,
@@ -186,11 +186,9 @@ class GameScene extends phaser.Scene {
         }
       }
     }else{
-      //this.turtle.anims.play('in', true);
       this.graphics.clear();
       if(this.input.activePointer.isDown){
         if(this.turtle.body.speed < 200){
-          this.turtle.anims.play('out', true);
           console.log('slow', this.turtle.body.speed, this.turtle.body.velocity);
           this.turtle.body.setVelocityX(
             this.turtle.body.velocity.x*0.9
@@ -199,7 +197,7 @@ class GameScene extends phaser.Scene {
             this.turtle.body.velocity.y*0.9
           );
           // this.turtle.body.speed -= 1500;
-          //this.particles.emitParticleAt(this.turtle.body.x, this.turtle.body.y);
+          this.particles.emitParticleAt(this.turtle.body.x, this.turtle.body.y);
         }
       }
     }
@@ -211,7 +209,8 @@ class GameScene extends phaser.Scene {
         this.turtle.id = id;
         this.turtle.alpha = 1;
         for (var i = 0; i < fruit.length; i++) {
-          new Fruit( this, fruit[i].x, fruit[i].y);
+          //new Fruit( this, fruit[i].x, fruit[i].y);
+          this.addFruit(fruit[i].id, fruit[i].x, fruit[i].y);
         }
         if(turtles || turtles.length !== 0 || turtles.length !== null){
           for (var i = 0; i < turtles.length; i++) {
@@ -245,8 +244,8 @@ class GameScene extends phaser.Scene {
         // this.add.sprite(position.x, position.y, 'placeholder');
       });
 
-      window.game.socket.on('addFruit', (position) => {
-        new Fruit( this, position.x, position.y);
+      window.game.socket.on('fruit', (position) => {
+        this.addFruit(position.id, position.x, position.y);
       });
 
       window.game.socket.on('disconnected', (id) => {
@@ -255,6 +254,11 @@ class GameScene extends phaser.Scene {
 
     }
 
+  }
+
+  addFruit(i, x, y){
+    var a = new Fruit( this, x, y);
+    a.id = i;
   }
 }
 export default GameScene;

@@ -20,9 +20,12 @@ class Fruit extends phaser.GameObjects.Sprite {
       scene.fruits.add(this);
     }
 
-    collected(){
+    collected(turtle_id){
       this.alpha = 0;
       this.destroy();
+      if(window.game.socket.connected){
+        window.game.socket.emit('eaten', this.id, turtle_id);
+      }
     }
 
     preUpdate (time, delta) {

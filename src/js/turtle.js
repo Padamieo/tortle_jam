@@ -14,7 +14,7 @@ class Turt extends phaser.Physics.Arcade.Sprite {
       this.flipX = false;
       this.flipY = false;
 
-      this.direction = 1;
+      this.direction = 0;
 
       this.on('animationupdate-vertical_crawl', () => {
         //console.log(this.anims.currentAnim.key);
@@ -74,15 +74,22 @@ class Turt extends phaser.Physics.Arcade.Sprite {
 
       this.shell = scene.add.sprite(x,y, 'all')
       this.shell.setScale(10).setOrigin(0.5, 0.5);
-      //.setTint(this.colour)
+      //.setTint(this.colour);
 
     }
 
     update (game) {
-      if(this.body.position.x !== this.old.x || this.body.position.y !== this.old.y){
-        this.old.x = this.body.position.x;
-        this.old.y = this.body.position.y;
-        //console.log('update');
+      if(this.body.position.x.toFixed(0) !== this.old.x || this.body.position.y.toFixed(0) !== this.old.y){
+        this.old.x = this.body.position.x.toFixed(0);
+        this.old.y = this.body.position.y.toFixed(0);
+        // console.log('update', this.old);
+        if(window.game.socket.connected){
+          window.game.socket.emit('update', {
+            id:this.id,
+            x:this.old.x,
+            y:this.old.y
+          });
+        }
       }
     }
 

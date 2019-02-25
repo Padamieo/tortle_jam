@@ -16,20 +16,38 @@ io.on('connection', (socket) => {
   socket.on('start', (position) => {
     position.id = socket.id;
     turtles.push(position);
+
     if(fruits.length >= 0){
-      fruits.push({x:0,y:0});
-      fruits.push({x:0,y:1000});
-      fruits.push({x:1000,y:0});
-      fruits.push({x:1000,y:1000});
+      fruits.push({id:1,x:0,y:0});
+      fruits.push({id:2,x:0,y:1000});
+      fruits.push({id:3,x:1000,y:0});
+      fruits.push({id:4,x:1000,y:1000});
     }
+
     io.sockets.connected[socket.id].emit('setup', socket.id, fruits, turtles);
     socket.emit('player', position);
   });
 
-  socket.on('update', (data) => {
-    for(var i = 0; i <= turtles.length; i++){
+  socket.on('eaten', (appleId, playerId) => {
+    console.log('eat', appleId, playerId);
+    //renive old fruit
+    fruits.push({id:5, x:400,y:400});
+    socket.emit('fruit', {id:5, x:400,y:400});
+  });
 
-    }
+  // socket.on('update', (data) => {
+  //   for(var i = 0; i <= turtles.length; i++){
+  //
+  //   }
+  // });
+
+  socket.on('update', (data) => {
+    turtles.filter((turtle) => {
+      if(data.id === turtle.id){
+        turtle.x = data.x;
+        turtle.y = data.y;
+      }
+    });
   });
 
   socket.on('disconnect', () => {
