@@ -29,12 +29,14 @@ class Turt extends phaser.Physics.Arcade.Sprite {
         this.setRotation(phaser.Math.DegToRad(this.flipX ? -90 : 0));
       }, this);
 
+      this.moving = false;
+
       this.setPosition(x, y);
       this.old = {x:0, y:0};
       this.old.x = x;
       this.old.y = y;
 
-      scene.physics.add.existing(this);
+      //colours
 
       var c = phaser.Display.Color.RandomRGB(0,256);
       var r = phaser.Display.Color.ComponentToHex(c.r);
@@ -43,13 +45,15 @@ class Turt extends phaser.Physics.Arcade.Sprite {
       //console.log('0x'+r+g+b);
       this.colour = '0x'+r+g+b;
       //this.setTint('0x'+r+'ff'+b);
-      this.body.setDrag(1, 1);
 
+      //physics
+      scene.physics.add.existing(this);
       this.setBounce(0.7);
       this.setScale(10);//0.5);
       this.setOrigin(0.5, 0.5);
       var w = this.width*0.7;
       var h = this.height*0.7;
+      this.body.setDrag(1, 1);
       this.body.setSize(w, h, true);
       this.body.setAllowGravity(false);
       this.body.setMass(10);
@@ -58,19 +62,11 @@ class Turt extends phaser.Physics.Arcade.Sprite {
         x:(this.width - w)*0.5,
         y:(this.height - h)*0.5
       };
-
-      // this.body.angularDrag = 4;
-      // this.body.angularVelocity = 0;
-
       this.setCollideWorldBounds(true);
-      this.body.stopVelocityOnCollide = false;
 
-      this.moving = false;
-      // scene.add.existing(this);
-      console.log('all', this);
-
+      //add to physics group
       scene.turtles.add(this);
-      scene.physics.add.collider(this, scene.turtles);
+      //scene.physics.add.collider(this, scene.turtles);
 
       this.shell = scene.add.sprite(x,y, 'all')
       this.shell.setScale(10).setOrigin(0.5, 0.5);
@@ -104,27 +100,30 @@ class Turt extends phaser.Physics.Arcade.Sprite {
       //   console.log('this.body.isMoving', this.body.isMoving);
       // }
 
-      if(this.body.position.x !== this.body.prev.x){
-        console.log(this.body.position.x, this.body.prev.x);
-        console.log('moving');
-      }
-
       if(this.body.velocity !== 0){
         this.moving = true;
       }
 
-      if(this.body.speed <= 5){
-        this.body.stop();
+      if(this.body.speed < 200){
+        this.breakable = true;
+      }else{
+        this.breakable = false;
+      }
+
+      if(this.body && this.body.speed <= 5){
         this.moving = false;
       }
 
       var direction = (this.direction % 2 === 0 ? 'vertical' : 'diagonal' );
       if(this.moving){
-        this.anims.play(direction+'_hidden', true);
+        if(this.breakable){
+          this.anims.play(direction+'_crawl', true);
+        }else{
+          this.anims.play(direction+'_hidden', true);
+        }
       }else{
         this.anims.play(direction+'_out', true);
       }
-
     }
 
     directions(){

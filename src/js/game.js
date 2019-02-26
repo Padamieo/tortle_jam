@@ -19,21 +19,12 @@ class GameScene extends phaser.Scene {
       all,
       { frameWidth: 16, frameHeight: 16, endFrame: 8 }
     );
+
     //this.load.image('all', turtle);
   }
 
   create () {
     setupAnimations(this);
-    // this.anims.create({
-    //   key: 'shell',
-    //   frames: [ { key: 'all', frame: 0 } ],
-    //   frameRate: 10,
-    // });
-
-    // var placeholder = this.add.sprite(50, 10, 'placeholder');
-    // placeholder.width = 10;
-    // placeholder.scaleY = 0.5;
-    // placeholder.scaleX = 0.5;
 
     // for (var y = 0; y < 4; y++) {
     //   for (var x = 0; x < 4; x++) {
@@ -61,8 +52,6 @@ class GameScene extends phaser.Scene {
 
     this.turtle = new Turt( this, x, y );
     //game.turtle.alpha = 0.5;
-    this.turtles.add(this.turtle);
-    this.physics.add.collider(this.turtle, this.turtles);
 
     this.camera = this.cameras.main.startFollow(
       this.turtle,
@@ -74,11 +63,16 @@ class GameScene extends phaser.Scene {
     this.graphics = this.add.graphics({ lineStyle: { width: 4, color: 0xaa00aa } });
     this.graphics.strokeLineShape(this.line);
 
-    // var t = new Turt( this, phaser.Math.Between(this.bottom, this.top), phaser.Math.Between(this.bottom, this.top) );
-    // this.turtles.add(t);
-    // this.physics.add.collider(t, this.turtles);
-
+    //new Turt( this, phaser.Math.Between(this.bottom, this.top), phaser.Math.Between(this.bottom, this.top) );
     // new Fruit( this, phaser.Math.Between(this.bottom, this.top), phaser.Math.Between(this.bottom, this.top) );
+
+    this.physics.add.collider(this.turtle, this.turtles, () => {
+      console.log('impact');
+    });
+
+    this.physics.world.collide(this.turtle, this.physics.world, () => {
+      console.log('world');
+    });
 
     this.physics.add.overlap(this.fruits, this.turtle, (x) => {
       console.log('over', x);
@@ -86,7 +80,7 @@ class GameScene extends phaser.Scene {
     });
 
     var io = require('socket.io-client');
-    window.game.socket = io.connect('http://192.168.75.45:4000', {
+    window.game.socket = io.connect('http://192.168.1.107:4000', {
       reconnection:false
     });
 
@@ -96,6 +90,7 @@ class GameScene extends phaser.Scene {
 
     this.keys = this.input.keyboard.addKeys('A,D,S,W');
 
+    // camera tween
     // this.tween = this.tweens.addCounter({
     //   paused: true,
     //   from: 1,
@@ -111,29 +106,26 @@ class GameScene extends phaser.Scene {
     //     this.tween.pause();
     //   }
     // });
-
     //this.tween.pause();
-
     //this.camera.setViewport(0, 0, 400, 400);
 
-      var particles = this.add.particles('crate');
-      console.log(particles);
-      this.particles = particles.createEmitter({
-        quantity: 1,
-        lifespan: 600,
-        speed: { min: 10, max: 100 },
-        angle: { min: 0, max: 360 },
-        alpha: { start: 1, end: 0 },
-        scale: { start: 0.5, end: 1 },
-        on: false
-      });
+    // particles for slide
+    var particles = this.add.particles('crate');
+    console.log(particles);
+    this.particles = particles.createEmitter({
+      quantity: 1,
+      lifespan: 600,
+      speed: { min: 10, max: 100 },
+      angle: { min: 0, max: 360 },
+      alpha: { start: 1, end: 0 },
+      scale: { start: 0.5, end: 1 },
+      on: false
+    });
 
   }
 
   update(){
     this.turtle.update();
-
-    //var a = this.turtles.children.entries[this.turtles.children.entries.length-1];
 
     // if(this.keys.A.isDown){
     //   game.turtle.setVelocity(-100, 0);
@@ -188,14 +180,14 @@ class GameScene extends phaser.Scene {
     }else{
       this.graphics.clear();
       if(this.input.activePointer.isDown){
-        if(this.turtle.body.speed < 200){
+        if(this.turtle.breakable){
           console.log('slow', this.turtle.body.speed, this.turtle.body.velocity);
-          this.turtle.body.setVelocityX(
-            this.turtle.body.velocity.x*0.9
-          );
-          this.turtle.body.setVelocityY(
-            this.turtle.body.velocity.y*0.9
-          );
+          // this.turtle.body.setVelocityX(
+          //   this.turtle.body.velocity.x*0.9
+          // );
+          // this.turtle.body.setVelocityY(
+          //   this.turtle.body.velocity.y*0.9
+          // );
           // this.turtle.body.speed -= 1500;
           this.particles.emitParticleAt(this.turtle.body.x, this.turtle.body.y);
         }
