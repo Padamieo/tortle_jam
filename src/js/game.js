@@ -110,7 +110,7 @@ class GameScene extends phaser.Scene {
     //this.camera.setViewport(0, 0, 400, 400);
 
     // particles for slide
-    var particles = this.add.particles('crate');
+    var particles = this.add.particles('all').setFrame(11);
     console.log(particles);
     this.particles = particles.createEmitter({
       quantity: 1,
