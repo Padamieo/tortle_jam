@@ -18,7 +18,8 @@
     "lint": "eslint ./src/**.js",
     "coverage": "jest --coverage --config=config/jest.config.js",
     "test": "jest --config=config/jest.config.js",
-    "test:watch": "jest --watch"
+    "test:watch": "jest --watch",
+    "server": "node ./src/server/server.js"
   },
   "devDependencies": {
     "babel-core": "^6.26.3",

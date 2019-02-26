@@ -2,8 +2,6 @@ import './index.css';
 
 import phaser from 'phaser';
 import GameScene from './js/game';
-// import Turt from './js/turtle';
-// import Fruit from './js/fruit';
 
 var config = {
     type: Phaser.AUTO,
@@ -28,13 +26,6 @@ var config = {
       GameScene
     ]
 };
-
-//console.log(phaser);
-// import turtle_placeholder from 'assets/turtle_placeholder.png';
-// import turtle from 'assets/turtle.png';
-// import bg from 'assets/uv-grid-diag.png';
-// import fruits from 'assets/fruit.png';
-// import tiles from 'assets/Tileset_BW.png';
 
 window.game = new phaser.Game(config);
 // game.setGameSize(600,600);
