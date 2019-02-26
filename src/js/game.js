@@ -17,7 +17,7 @@ class GameScene extends phaser.Scene {
     this.load.image('bg', bg);
     this.load.spritesheet('all',
       all,
-      { frameWidth: 16, frameHeight: 16, endFrame: 8 }
+      { frameWidth: 16, frameHeight: 16, endFrame: 11 }
     );
     //this.load.image('all', turtle);
   }
@@ -50,7 +50,7 @@ class GameScene extends phaser.Scene {
     // tile.setFrame(8);
     //.setRotation(-Math.PI * 0.25);
 
-    var tilesprite = this.add.tileSprite(0, 0, 50, 50, 'all').setFrame(8).setOrigin(0).setScale(10);
+    var tilesprite = this.add.tileSprite(0, 0, 50, 50, 'all').setFrame(10).setOrigin(0).setScale(10);
     console.log(tilesprite);
 
     var x = phaser.Math.Between(this.bottom, this.top);

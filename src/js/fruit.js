@@ -5,7 +5,7 @@ class Fruit extends phaser.GameObjects.Sprite {
       super(scene, x, y, 'all');
       scene.add.existing(this);
       scene.physics.add.existing(this);
-      this.setFrame(7);
+      this.setFrame(9);
       this.setScale(5);
       // this.add.sprite(x, y, 'placeholder');
       // this.setTexture('placeholder').setOrigin(0.5, 0.5);
