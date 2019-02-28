@@ -40,16 +40,18 @@ io.on('connection', (socket) => {
   socket.on('eaten', (fruitId, playerId) => {
     console.log('eat', fruitId, playerId);
     var index = fruits.findIndex(fruit => fruit.id === fruitId);
-    console.log('avaliable', avaliable, index);
-    avaliable.push(index);
-    console.log('avaliable', avaliable);
-    fruits.splice(index, 1);
-    var n = avaliable.shift();
-    console.log('avaliable', avaliable, n);
-    fruits.push({id:n,x:getRandomInt(1000),y:getRandomInt(1000)});
-    //renive old fruit
-    //fruits.push({id:5, x:400,y:400});
-    //socket.emit('fruit', {id:5, x:400,y:400});
+    if(index !== -1){
+      console.log('avaliable', avaliable, index);
+      avaliable.push(index);
+      console.log('avaliable', avaliable);
+      fruits.splice(index, 1);
+      var n = avaliable.shift();
+      console.log('avaliable', avaliable, n);
+      var newFruit = {id:n,x:getRandomInt(1000),y:getRandomInt(1000)};
+      fruits.push(newFruit);
+      socket.emit('fruit', newFruit);
+    }
+    return;
   });
 
   // socket.on('update', (data) => {

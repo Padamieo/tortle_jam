@@ -74,9 +74,11 @@ class GameScene extends phaser.Scene {
     //   console.log('world');
     // });
 
-    this.physics.add.overlap(this.fruits, this.turtle, (x) => {
-      console.log('over', x);
-      x.collected(this.turtle.id);
+    this.physics.add.overlap(this.fruits, this.turtle, (fruit) => {
+      if(!fruit.eaten){
+        console.log('over', fruit.id, fruit.eaten);
+        fruit.collected(this.turtle.id);
+      }
     });
 
     var io = require('socket.io-client');

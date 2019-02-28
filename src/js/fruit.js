@@ -26,7 +26,7 @@ class Fruit extends phaser.GameObjects.Sprite {
         return;
       }
       this.alpha = 0;
-      this.destroy();
+      //this.destroy();
       if(window.game.socket.connected){
         window.game.socket.emit('eaten', this.id, turtle_id);
       }
