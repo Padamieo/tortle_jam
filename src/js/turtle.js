@@ -63,6 +63,8 @@ class Turt extends phaser.Physics.Arcade.Sprite {
         y:(this.height - h)*0.5
       };
       this.setCollideWorldBounds(true);
+      this.body.onWorldBounds = true;
+      scene.physics.world.on('worldbounds', this.onWorldBounds);
 
       //add to physics group
       scene.turtles.add(this);
@@ -95,10 +97,6 @@ class Turt extends phaser.Physics.Arcade.Sprite {
 
       this.shell.x = this.x;
       this.shell.y = this.y;
-
-      // if(this.body.isMoving){
-      //   console.log('this.body.isMoving', this.body.isMoving);
-      // }
 
       if(this.body.velocity !== 0){
         this.moving = true;
@@ -137,6 +135,10 @@ class Turt extends phaser.Physics.Arcade.Sprite {
       }else if(this.direction === 6 || this.direction === 5){
         this.setRotation(phaser.Math.DegToRad(-90));
       }
+    }
+
+    onWorldBounds(){
+      console.log('onWorldBounds');
     }
 }
 

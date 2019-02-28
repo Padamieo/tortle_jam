@@ -18,14 +18,19 @@ class Fruit extends phaser.GameObjects.Sprite {
       //scene.stage.add(this);
       //this.setCollideWorldBounds(true);
       scene.fruits.add(this);
+      this.eaten = false;
     }
 
     collected(turtle_id){
+      if(this.eaten){
+        return;
+      }
       this.alpha = 0;
       this.destroy();
       if(window.game.socket.connected){
         window.game.socket.emit('eaten', this.id, turtle_id);
       }
+      this.eaten = true;
     }
 
     preUpdate (time, delta) {

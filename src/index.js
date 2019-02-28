@@ -15,6 +15,9 @@ var config = {
       mode: Phaser.Scale.FIT,
       autoCenter: Phaser.Scale.CENTER_BOTH
     },
+    fps: {
+      target: 1,
+    },
     queue: true,
     physics: {
       default: 'arcade',

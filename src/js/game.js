@@ -70,9 +70,9 @@ class GameScene extends phaser.Scene {
       console.log('impact');
     });
 
-    this.physics.world.collide(this.turtle, this.physics.world, () => {
-      console.log('world');
-    });
+    // this.physics.world.collide(this.turtle, this.physics.world, () => {
+    //   console.log('world');
+    // });
 
     this.physics.add.overlap(this.fruits, this.turtle, (x) => {
       console.log('over', x);
@@ -80,7 +80,7 @@ class GameScene extends phaser.Scene {
     });
 
     var io = require('socket.io-client');
-    window.game.socket = io.connect('http://192.168.1.107:4000', {
+    window.game.socket = io.connect('http://localhost:4000', {
       reconnection:false
     });
 
@@ -88,7 +88,7 @@ class GameScene extends phaser.Scene {
       window.game.socket.emit('start', {x,y});
     });
 
-    this.keys = this.input.keyboard.addKeys('A,D,S,W');
+    this.keys = this.input.keyboard.addKeys('S,Z');
 
     // camera tween
     // this.tween = this.tweens.addCounter({
@@ -127,14 +127,12 @@ class GameScene extends phaser.Scene {
   update(){
     this.turtle.update();
 
-    // if(this.keys.A.isDown){
-    //   game.turtle.setVelocity(-100, 0);
-    // }
-    // if(this.keys.W.isDown){
-    //   game.turtle.setVelocity(0, -100);
-    // }
-    /*
     if(this.keys.S.isDown){
+      this.turtle.setVelocity(0, 0);
+    }
+
+    /*
+    if(this.keys.Z.isDown){
       if(!this.tween.isPlaying()){
         this.tween.play();
       }
@@ -151,7 +149,6 @@ class GameScene extends phaser.Scene {
     */
 
     if(this.turtle.moving === false){
-      //game.turtle.anims.play('out', true);
       if(this.input.activePointer.isDown){
         this.graphics.clear();
         this.graphics.strokeLineShape(this.line);
@@ -188,7 +185,6 @@ class GameScene extends phaser.Scene {
           // this.turtle.body.setVelocityY(
           //   this.turtle.body.velocity.y*0.9
           // );
-          // this.turtle.body.speed -= 1500;
           this.particles.emitParticleAt(this.turtle.body.x, this.turtle.body.y);
         }
       }
@@ -206,7 +202,7 @@ class GameScene extends phaser.Scene {
         }
         if(turtles || turtles.length !== 0 || turtles.length !== null){
           for (var i = 0; i < turtles.length; i++) {
-            console.log(turtles[i]);
+            console.log('turtles', turtles[i]);
             if(turtles[i] !== null){
               if(turtles[i].id !== this.turtle.id){
                 new Turt( this, turtles[i].x, turtles[i].y);

@@ -4,6 +4,15 @@ var io = require('socket.io')(http);
 
 var turtles = [];
 var fruits = [];
+var avaliable = [5,6];
+
+function createFruit(){
+
+}
+
+function getRandomInt(max) {
+  return Math.floor(Math.random() * Math.floor(max));
+}
 
 http.listen(4000, () => {
   console.log('listening:');
@@ -17,22 +26,30 @@ io.on('connection', (socket) => {
     position.id = socket.id;
     turtles.push(position);
 
-    if(fruits.length >= 0){
-      fruits.push({id:1,x:0,y:0});
-      fruits.push({id:2,x:0,y:1000});
-      fruits.push({id:3,x:1000,y:0});
-      fruits.push({id:4,x:1000,y:1000});
+    if(fruits.length <= 0){
+      fruits.push({id:1,x:getRandomInt(1000),y:getRandomInt(1000)});
+      fruits.push({id:2,x:getRandomInt(1000),y:getRandomInt(1000)});
+      fruits.push({id:3,x:getRandomInt(1000),y:getRandomInt(1000)});
+      fruits.push({id:4,x:getRandomInt(1000),y:getRandomInt(1000)});
     }
-
+    console.log(turtles.length);
     io.sockets.connected[socket.id].emit('setup', socket.id, fruits, turtles);
     socket.emit('player', position);
   });
 
-  socket.on('eaten', (appleId, playerId) => {
-    console.log('eat', appleId, playerId);
+  socket.on('eaten', (fruitId, playerId) => {
+    console.log('eat', fruitId, playerId);
+    var index = fruits.findIndex(fruit => fruit.id === fruitId);
+    console.log('avaliable', avaliable, index);
+    avaliable.push(index);
+    console.log('avaliable', avaliable);
+    fruits.splice(index, 1);
+    var n = avaliable.shift();
+    console.log('avaliable', avaliable, n);
+    fruits.push({id:n,x:getRandomInt(1000),y:getRandomInt(1000)});
     //renive old fruit
-    fruits.push({id:5, x:400,y:400});
-    socket.emit('fruit', {id:5, x:400,y:400});
+    //fruits.push({id:5, x:400,y:400});
+    //socket.emit('fruit', {id:5, x:400,y:400});
   });
 
   // socket.on('update', (data) => {
