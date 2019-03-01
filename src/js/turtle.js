@@ -78,11 +78,12 @@ class Turt extends phaser.Physics.Arcade.Sprite {
 
     update (game) {
       if(this.body.position.x.toFixed(0) !== this.old.x || this.body.position.y.toFixed(0) !== this.old.y){
+        console.log(this.body.position.x.toFixed(0), this.old.x );
         this.old.x = this.body.position.x.toFixed(0);
         this.old.y = this.body.position.y.toFixed(0);
         // console.log('update', this.old);
         if(window.game.socket.connected){
-          window.game.socket.emit('update', {
+          window.game.socket.emit('updateServer', {
             id:this.id,
             x:this.old.x,
             y:this.old.y

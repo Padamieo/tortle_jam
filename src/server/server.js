@@ -4,7 +4,6 @@ var io = require('socket.io')(http);
 
 var turtles = [];
 var fruits = [];
-var avaliable = [5,6];
 
 function createFruit(){
 
@@ -27,10 +26,7 @@ io.on('connection', (socket) => {
     turtles.push(position);
 
     if(fruits.length <= 0){
-      fruits.push({id:1,x:getRandomInt(1000),y:getRandomInt(1000)});
-      fruits.push({id:2,x:getRandomInt(1000),y:getRandomInt(1000)});
-      fruits.push({id:3,x:getRandomInt(1000),y:getRandomInt(1000)});
-      fruits.push({id:4,x:getRandomInt(1000),y:getRandomInt(1000)});
+      fruits.push({id:1,x:500,y:500});
     }
     console.log(turtles.length);
     io.sockets.connected[socket.id].emit('setup', socket.id, fruits, turtles);
@@ -40,17 +36,17 @@ io.on('connection', (socket) => {
   socket.on('eaten', (fruitId, playerId) => {
     console.log('eat', fruitId, playerId);
     var index = fruits.findIndex(fruit => fruit.id === fruitId);
-    if(index !== -1){
-      console.log('avaliable', avaliable, index);
-      avaliable.push(index);
-      console.log('avaliable', avaliable);
-      fruits.splice(index, 1);
-      var n = avaliable.shift();
-      console.log('avaliable', avaliable, n);
-      var newFruit = {id:n,x:getRandomInt(1000),y:getRandomInt(1000)};
-      fruits.push(newFruit);
-      socket.emit('fruit', newFruit);
-    }
+    // if(index !== -1){
+    //   console.log('avaliable', avaliable, index);
+    //   avaliable.push(index);
+    //   console.log('avaliable', avaliable);
+    //   fruits.splice(index, 1);
+    //   var n = avaliable.shift();
+    //   console.log('avaliable', avaliable, n);
+    //   var newFruit = {id:n,x:getRandomInt(1000),y:getRandomInt(1000)};
+    //   fruits.push(newFruit);
+    //   socket.emit('fruit', newFruit);
+    // }
     return;
   });
 
@@ -60,13 +56,18 @@ io.on('connection', (socket) => {
   //   }
   // });
 
-  socket.on('update', (data) => {
+  socket.on('updateServer', (data) => {
+    var updated = false;
     turtles.filter((turtle) => {
       if(data.id === turtle.id){
         turtle.x = data.x;
         turtle.y = data.y;
+        updated = true;
       }
     });
+    if(updated === true){
+      socket.emit('updateClient', data);
+    }
   });
 
   socket.on('disconnect', () => {
@@ -90,11 +91,3 @@ io.on('connection', (socket) => {
   });
 
 });
-
-
-
-// function createWindow () {
-//   console.log('serverss');
-// }
-//
-// app.on('ready', createWindow);

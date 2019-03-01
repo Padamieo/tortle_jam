@@ -64,7 +64,7 @@ class GameScene extends phaser.Scene {
     this.graphics.strokeLineShape(this.line);
 
     //new Turt( this, phaser.Math.Between(this.bottom, this.top), phaser.Math.Between(this.bottom, this.top) );
-    // new Fruit( this, phaser.Math.Between(this.bottom, this.top), phaser.Math.Between(this.bottom, this.top) );
+    //new Fruit( this, phaser.Math.Between(this.bottom, this.top), phaser.Math.Between(this.bottom, this.top) );
 
     this.physics.add.collider(this.turtle, this.turtles, () => {
       console.log('impact');
@@ -77,7 +77,8 @@ class GameScene extends phaser.Scene {
     this.physics.add.overlap(this.fruits, this.turtle, (fruit) => {
       if(!fruit.eaten){
         console.log('over', fruit.id, fruit.eaten);
-        fruit.collected(this.turtle.id);
+        fruit.collected(this.turtle.id, this);
+        fruit.destroy();
       }
     });
 
@@ -199,7 +200,6 @@ class GameScene extends phaser.Scene {
         this.turtle.id = id;
         this.turtle.alpha = 1;
         for (var i = 0; i < fruit.length; i++) {
-          //new Fruit( this, fruit[i].x, fruit[i].y);
           this.addFruit(fruit[i].id, fruit[i].x, fruit[i].y);
         }
         if(turtles || turtles.length !== 0 || turtles.length !== null){
@@ -207,7 +207,7 @@ class GameScene extends phaser.Scene {
             console.log('turtles', turtles[i]);
             if(turtles[i] !== null){
               if(turtles[i].id !== this.turtle.id){
-                new Turt( this, turtles[i].x, turtles[i].y);
+                new Turt( this, parseInt(turtles[i].x), parseInt(turtles[i].y));
               }
             }
           }
@@ -221,7 +221,10 @@ class GameScene extends phaser.Scene {
       });
 
       window.game.socket.on('update', (data) => {
-        console.log(data);
+        console.log('update');
+        if(data.id !== this.turtle.id){
+          console.log(data);
+        }
       });
 
       window.game.socket.on('position', (position) => {
