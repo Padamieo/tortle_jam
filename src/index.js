@@ -1,35 +1,34 @@
 import './index.css';
 
-import phaser from 'phaser';
-import GameScene from './js/game';
+import * as PIXI from 'pixi.js';
+const app = new PIXI.Application(600, 600, {backgroundColor : 0x1099bb});
+document.body.appendChild(app.view);
 
-var config = {
-    type: Phaser.AUTO,
-    parent: 'phaser-example',
-    antialias: true,
-    pixelArt: true,
-    zoom: 1,
-    scale:{
-      width: 1024, //window.innerWidth, //432,
-      height: 1024, //window.innerHeight, //768,
-      mode: Phaser.Scale.FIT,
-      autoCenter: Phaser.Scale.CENTER_BOTH
-    },
-    fps: {
-      target: 1,
-    },
-    queue: true,
-    physics: {
-      default: 'arcade',
-      arcade: {
-        debug: true,
-        fps: 10,
-      }
-    },
-    scene: [
-      GameScene
-    ]
-};
+console.log(PIXI);
 
-window.game = new phaser.Game(config);
-// game.setGameSize(600,600);
+import all from 'assets/turtle.png';
+console.log(all);
+// var text = PIXI.Texture.fromImage(all);
+// var sprite = new PIXI.Sprite(text);
+PIXI.loader.add(all).load(setup);
+
+let texture = PIXI.utils.TextureCache[all];
+let bunny = new PIXI.Sprite(texture);
+
+// center the sprite's anchor point
+bunny.anchor.set(0.5);
+
+// move the sprite to the center of the screen
+bunny.x = app.screen.width / 2;
+bunny.y = app.screen.height / 2;
+console.log(bunny);
+
+app.stage.addChild(bunny);
+
+// Listen for animate update
+app.ticker.add(function(delta) {
+    // just for fun, let's rotate mr rabbit a little
+    // delta is 1 if running at 100% performance
+    // creates frame-independent transformation
+    bunny.rotation += 0.1 * delta;
+});
