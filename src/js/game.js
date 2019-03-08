@@ -48,7 +48,10 @@ class GameScene extends phaser.Scene {
     var y = phaser.Math.Between(this.bottom, this.top);
 
     this.turtles = this.add.group();
-    this.fruits = this.add.group();
+    // this.fruits = this.add.group();
+    this.fruits = this.physics.add.group();
+    console.log(this.fruits);
+    this.fruits.createMultipleCallback = false;
 
     this.turtle = new Turt( this, x, y );
     //game.turtle.alpha = 0.5;
@@ -74,13 +77,17 @@ class GameScene extends phaser.Scene {
     //   console.log('world');
     // });
 
-    this.physics.add.overlap(this.fruits, this.turtle, (fruit) => {
+    /*
+    this.physics.add.overlap(this.fruits, this.turtle, (turtle, fruit) => {
+      //console.log(fruit);
       if(!fruit.eaten){
         console.log('over', fruit.id, fruit.eaten);
         fruit.collected(this.turtle.id, this);
         fruit.destroy();
+        //this.fruits.refresh();
       }
     });
+    */
 
     var io = require('socket.io-client');
     window.game.socket = io.connect('http://localhost:4000', {
