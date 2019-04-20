@@ -10,10 +10,9 @@ import all from 'assets/turtle.png';
 console.log(all);
 // var text = PIXI.Texture.fromImage(all);
 // var sprite = new PIXI.Sprite(text);
-PIXI.loader.add(all).load(setup);
 
-let texture = PIXI.utils.TextureCache[all];
-let bunny = new PIXI.Sprite(texture);
+var hair_texture = PIXI.Texture.from(all);
+var bunny = new PIXI.Sprite(hair_texture);
 
 // center the sprite's anchor point
 bunny.anchor.set(0.5);
